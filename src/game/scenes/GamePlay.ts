@@ -2,18 +2,18 @@ import { Scene } from "phaser";
 
 import { EventBus } from "../EventBus";
 
-export class GameOver extends Scene {
+export class GamePlay extends Scene {
   camera: Phaser.Cameras.Scene2D.Camera;
   background: Phaser.GameObjects.Image;
   sceneTitle: Phaser.GameObjects.Text;
 
   constructor() {
-    super("GameOver");
+    super("GamePlay");
   }
 
   create() {
     this.camera = this.cameras.main;
-    this.camera.setBackgroundColor(0xff0000);
+    this.camera.setBackgroundColor(0x00ff00);
 
     this.background = this.add.image(
       this.scale.width / 2,
@@ -23,7 +23,7 @@ export class GameOver extends Scene {
     this.background.setAlpha(0.5);
 
     this.sceneTitle = this.add
-      .text(this.scale.width / 2, this.scale.height / 2, "Game over", {
+      .text(this.scale.width / 2, this.scale.height / 2, "Play", {
         fontFamily: "Arial Black",
         fontSize: 64,
         color: "#ffffff",

@@ -1,51 +1,41 @@
 <script lang="ts">
-  import type { Scene } from "phaser";
-  import type { MainMenu } from "../game/scenes/MainMenu";
   import PhaserGame, { type TPhaserRef } from "../game/PhaserGame.svelte";
-
-  // The sprite can only be moved in the MainMenu Scene
-  let canMoveSprite = false;
+  import type { GameMenu } from "../game/scenes/GameMenu";
+  import { logoPosition } from "../game/scenes/GameMenu";
 
   //  References to the PhaserGame component (game and scene are exposed)
   let phaserRef: TPhaserRef = { game: null, scene: null };
-  const spritePosition = { x: 0, y: 0 };
 
-  const changeScene = () => {
-    const scene = phaserRef.scene as MainMenu;
+  $: currentScene = phaserRef.scene;
+  $: isGameMenuScene = currentScene?.scene.key === "GameMenu";
 
-    if (scene) {
-      // Call the changeScene method defined in the `MainMenu`, `Game` and `GameOver` Scenes
-      scene.changeScene();
+  const changeScene = (sceneKey: string) => {
+    if (currentScene) {
+      currentScene.scene.start(sceneKey);
     }
   };
 
-  const moveSprite = () => {
-    const scene = phaserRef.scene as MainMenu;
+  const toggleLogoMovement = () => {
+    const scene = currentScene as GameMenu;
 
-    if (scene) {
-      // Get the update logo position
-      (scene as MainMenu).moveLogo(({ x, y }) => {
-        spritePosition.x = x;
-        spritePosition.y = y;
-      });
+    if (isGameMenuScene) {
+      scene.toggleLogoMovement();
     }
   };
 
   const addSprite = () => {
-    const scene = phaserRef.scene as Scene;
-
-    if (scene) {
+    if (currentScene) {
       // Add more stars
-      const x = Phaser.Math.Between(64, scene.scale.width - 64);
-      const y = Phaser.Math.Between(64, scene.scale.height - 64);
+      const x = Phaser.Math.Between(64, currentScene.scale.width - 64);
+      const y = Phaser.Math.Between(64, currentScene.scale.height - 64);
 
       //  `add.sprite` is a Phaser GameObjectFactory method and it returns a Sprite Game Object instance
-      const star = scene.add.sprite(x, y, "star");
+      const star = currentScene.add.sprite(x, y, "star");
 
       //  ... which you can then act upon. Here we create a Phaser Tween to fade the star sprite in and out.
       //  You could, of course, do this from within the Phaser Scene code, but this is just an example
       //  showing that Phaser objects and systems can be acted upon from outside of Phaser itself.
-      scene.add.tween({
+      currentScene.add.tween({
         targets: star,
         duration: 500 + Math.random() * 1000,
         alpha: 0,
@@ -54,30 +44,73 @@
       });
     }
   };
-
-  // Event emitted from the PhaserGame component
-  const currentScene = (scene: Scene) => {
-    canMoveSprite = scene.scene.key !== "MainMenu";
-  };
 </script>
 
 <div id="app">
-  <PhaserGame bind:phaserRef currentActiveScene={currentScene} />
-  <div>
+  <PhaserGame bind:phaserRef />
+
+  <div class="svelte-controls">
+    <h2>Control via Svelte</h2>
+
+    <nav>
+      <h3>Scenes</h3>
+
+      <ul class="menu">
+        <li>
+          <button class="button" on:click={() => changeScene("GameMenu")}>
+            Main menu
+            <code>(/scenes/GameMenu.ts)</code>
+          </button>
+        </li>
+
+        <li>
+          <button class="button" on:click={() => changeScene("GamePlay")}>
+            Play
+            <code>(/scenes/GamePlay.ts)</code>
+          </button>
+        </li>
+
+        <li>
+          <button class="button" on:click={() => changeScene("GameOver")}>
+            Game over
+            <code>(/scenes/GameOver.ts)</code>
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    {#if currentScene}
+      <div>
+        <h3>Current scene</h3>
+
+        <dl class="info-list">
+          <dt>Scene key:</dt>
+          <dd>{currentScene.scene.key}</dd>
+
+          {#if isGameMenuScene}
+            <dt>Logo position:</dt>
+            <dd><pre>{JSON.stringify($logoPosition, null, 2)}</pre></dd>
+          {/if}
+        </dl>
+      </div>
+    {/if}
+
     <div>
-      <button class="button" on:click={changeScene}>Change Scene</button>
-    </div>
-    <div>
-      <button class="button" disabled={canMoveSprite} on:click={moveSprite}
-        >Toggle Movement</button
-      >
-    </div>
-    <div class="spritePosition">
-      Sprite Position:
-      <pre>{JSON.stringify(spritePosition, null, 2)}</pre>
-    </div>
-    <div>
-      <button class="button" on:click={addSprite}>Add New Sprite</button>
+      <h3>Actions</h3>
+
+      <ul class="menu">
+        {#if isGameMenuScene}
+          <li>
+            <button class="button" on:click={toggleLogoMovement}>
+              Toggle logo movement
+            </button>
+          </li>
+        {/if}
+
+        <li>
+          <button class="button" on:click={addSprite}>Add new sprite</button>
+        </li>
+      </ul>
     </div>
   </div>
 </div>
@@ -92,18 +125,28 @@
     align-items: center;
   }
 
-  .spritePosition {
-    margin: 10px 0 0 10px;
-    font-size: 0.8em;
+  .svelte-controls {
+    height: 768px;
+    padding: 10px;
   }
 
-  .button {
-    width: 140px;
-    margin: 10px;
+  .menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .menu .button {
+    width: 200px;
+    margin-bottom: 10px;
+
     padding: 10px;
     background-color: #000000;
     color: rgba(255, 255, 255, 0.87);
     border: 1px solid rgba(255, 255, 255, 0.87);
+
+    text-align: left;
+
     cursor: pointer;
     transition: all 0.3s;
 
@@ -122,5 +165,17 @@
       border: 1px solid rgba(255, 255, 255, 0.3);
       color: rgba(255, 255, 255, 0.3);
     }
+  }
+
+  .info-list dt {
+    font-weight: bold;
+    margin-top: 1rem;
+  }
+
+  .info-list dd,
+  .info-list dd pre {
+    margin: 0;
+    font-family: monospace;
+    font-size: 0.75rem;
   }
 </style>

@@ -9,25 +9,17 @@
 
 <script lang="ts">
   import { onMount } from "svelte";
-  import StartGame from "./main";
+
   import { EventBus } from "./EventBus";
+  import StartGame from "./main";
 
-  export let phaserRef: TPhaserRef = {
-    game: null,
-    scene: null,
-  };
-
-  export let currentActiveScene: (scene: Scene) => void | undefined;
+  export let phaserRef: TPhaserRef = { game: null, scene: null };
 
   onMount(() => {
     phaserRef.game = StartGame("game-container");
 
-    EventBus.on("current-scene-ready", (scene_instance: Scene) => {
-      phaserRef.scene = scene_instance;
-
-      if (currentActiveScene) {
-        currentActiveScene(scene_instance);
-      }
+    EventBus.on("current-scene-ready", (sceneInstance: Scene) => {
+      phaserRef.scene = sceneInstance;
     });
   });
 </script>
