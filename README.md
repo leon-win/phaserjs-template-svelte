@@ -110,23 +110,14 @@ Here's an example of how to access Phaser data for use in a Svelte Component:
     import PhaserGame, { type TPhaserRef } from "game/PhaserGame.svelte"; // We provide the type TPhaserRef but this route is an example. You should use the correct path to the PhaserGame component.
 
     let phaserRef: TPhaserRef = { game: null, scene: null};
-
-    const onCurrentActiveScene = (scene) => {
-
-        // This is invoked
-
-    }
-
 </script>
 
-<PhaserGame phaserRef={phaserRef} currentActiveScene={onCurrentActiveScene} />
+<PhaserGame phaserRef={phaserRef} />
 ```
 
 In the code above, you can get a reference to the current Phaser Game instance and the current Scene by creating a reference with a variable `let phaserRef` and assign to PhaserGame component.
 
 From this reference, the game instance is available via `phaserRef.game` and the most recently active Scene via `phaserRef.scene`.
-
-The `onCurrentActiveScene` callback will also be invoked whenever the the Phaser Scene changes, as long as you emit the event via the EventBus, as outlined above.
 
 ## Handling Assets
 
