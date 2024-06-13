@@ -15,6 +15,12 @@
     }
   };
 
+  const toggleSveltePanel = () => {
+    document
+      .getElementById("svelte-controls")
+      ?.classList.toggle("svelte-controls--closed");
+  };
+
   const toggleLogoMovement = () => {
     const scene = currentScene as GameMenu;
 
@@ -49,69 +55,78 @@
 <div id="app">
   <PhaserGame bind:phaserRef />
 
-  <div class="svelte-controls">
-    <h2>Control via Svelte</h2>
+  <div class="svelte-controls svelte-controls--closed" id="svelte-controls">
+    <h2 class="header" on:click={() => toggleSveltePanel()}>
+      <img
+        class="header__svelte-logo"
+        src="https://github.com/sveltejs/branding/raw/master/svelte-logo.svg"
+        alt="Svelte logo"
+      />
+      <span class="header__svelte-text">Svelte panel</span>
+    </h2>
 
-    <nav>
-      <h3>Scenes</h3>
+    <main>
+      <nav>
+        <h3>Scenes</h3>
 
-      <ul class="menu">
-        <li>
-          <button class="button" on:click={() => changeScene("GameMenu")}>
-            Main menu
-            <code>(/scenes/GameMenu.ts)</code>
-          </button>
-        </li>
-
-        <li>
-          <button class="button" on:click={() => changeScene("GamePlay")}>
-            Play
-            <code>(/scenes/GamePlay.ts)</code>
-          </button>
-        </li>
-
-        <li>
-          <button class="button" on:click={() => changeScene("GameOver")}>
-            Game over
-            <code>(/scenes/GameOver.ts)</code>
-          </button>
-        </li>
-      </ul>
-    </nav>
-
-    {#if currentScene}
-      <div>
-        <h3>Current scene</h3>
-
-        <dl class="info-list">
-          <dt>Scene key:</dt>
-          <dd>{currentScene.scene.key}</dd>
-
-          {#if isGameMenuScene}
-            <dt>Logo position:</dt>
-            <dd><pre>{JSON.stringify($logoPosition, null, 2)}</pre></dd>
-          {/if}
-        </dl>
-      </div>
-    {/if}
-
-    <div>
-      <h3>Actions</h3>
-
-      <ul class="menu">
-        {#if isGameMenuScene}
+        <ul class="menu">
           <li>
-            <button class="button" on:click={toggleLogoMovement}>
-              Toggle logo movement
+            <button class="button" on:click={() => changeScene("GameMenu")}>
+              Main menu
+              <code>(/scenes/GameMenu.ts)</code>
             </button>
           </li>
-        {/if}
 
-        <li>
-          <button class="button" on:click={addSprite}>Add new sprite</button>
-        </li>
-      </ul>
-    </div>
+          <li>
+            <button class="button" on:click={() => changeScene("GamePlay")}>
+              Play
+              <code>(/scenes/GamePlay.ts)</code>
+            </button>
+          </li>
+
+          <li>
+            <button class="button" on:click={() => changeScene("GameOver")}>
+              Game over
+              <code>(/scenes/GameOver.ts)</code>
+            </button>
+          </li>
+        </ul>
+      </nav>
+
+      {#if currentScene}
+        <div>
+          <h3>Current scene</h3>
+
+          <dl class="info-list">
+            <dt>Scene key:</dt>
+            <dd>{currentScene.scene.key}</dd>
+
+            {#if isGameMenuScene}
+              <dt>Logo position:</dt>
+              <dd><pre>{JSON.stringify($logoPosition, null, 2)}</pre></dd>
+            {/if}
+          </dl>
+        </div>
+      {/if}
+
+      <div>
+        <h3>Actions</h3>
+
+        <ul class="menu">
+          {#if isGameMenuScene}
+            <li>
+              <button class="button" on:click={toggleLogoMovement}>
+                Toggle logo movement
+              </button>
+            </li>
+          {/if}
+
+          <li>
+            <button class="button" on:click={addSprite}>Add new sprite</button>
+          </li>
+        </ul>
+      </div>
+    </main>
   </div>
 </div>
 
@@ -119,41 +134,67 @@
   #app {
     width: 100%;
     height: 100vh;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
   }
 
   .svelte-controls {
+    width: auto;
+    position: fixed;
+    left: 0;
+    top: 0;
     height: 768px;
     padding: 10px;
-  }
+    background-color: #33333350;
 
-  .menu {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .menu .button {
-    width: 200px;
-    margin-bottom: 10px;
-    padding: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.87);
-    background-color: #000000;
-    color: rgba(255, 255, 255, 0.87);
-    text-align: left;
-    cursor: pointer;
-    transition: all 0.3s;
-
-    &:hover {
-      border: 1px solid #0ec3c9;
-      color: #0ec3c9;
+    & .header {
+      display: flex;
+      align-items: center;
+      margin: 0;
+      cursor: pointer;
     }
 
-    &:active {
-      background-color: #0ec3c9;
+    & .header__svelte-logo {
+      height: 2em;
+    }
+
+    & .header__svelte-text {
+      margin-left: 10px;
+    }
+
+    & .menu {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    & .menu .button {
+      width: 200px;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #fff;
+      background-color: #000000;
+      color: #fff;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.3s;
+
+      &:hover {
+        border: 1px solid #0ec3c9;
+        color: #0ec3c9;
+      }
+
+      &:active {
+        background-color: #0ec3c9;
+      }
+    }
+  }
+
+  .svelte-controls--closed {
+    height: auto;
+    background-color: unset;
+
+    & .header__svelte-text,
+    & main {
+      display: none;
     }
   }
 
