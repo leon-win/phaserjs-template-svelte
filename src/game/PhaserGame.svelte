@@ -16,7 +16,7 @@
   export let phaserRef: TPhaserRef = { game: null, scene: null };
 
   onMount(() => {
-    phaserRef.game = StartGame("game-container");
+    phaserRef.game = StartGame("phaser-container");
 
     EventBus.on("current-scene-ready", (sceneInstance: Scene) => {
       phaserRef.scene = sceneInstance;
@@ -24,4 +24,10 @@
   });
 </script>
 
-<div id="game-container"></div>
+<div id="phaser-container"></div>
+
+<style>
+  #phaser-container {
+    line-height: 0; /* to avoid extra height due to the inner <canvas> element  */
+  }
+</style>

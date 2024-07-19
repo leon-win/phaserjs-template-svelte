@@ -5,6 +5,8 @@
 
   export let phaserRef: TPhaserRef = { game: null, scene: null };
 
+  $: gameWidth = phaserRef.game?.config.width;
+  $: gameHeight = phaserRef.game?.config.height;
   $: currentScene = phaserRef.scene;
   $: isGameMenuScene = currentScene?.scene.key === "GameMenu";
 
@@ -51,7 +53,11 @@
   };
 </script>
 
-<div class="svelte-controls svelte-controls--closed" id="svelte-controls">
+<div
+  class="svelte-controls svelte-controls--closed"
+  id="svelte-controls"
+  style="--gameWidth:{gameWidth}; --gameHeight:{gameHeight}"
+>
   <h2 class="header" on:click={() => toggleSveltePanel()}>
     <img
       class="header__svelte-logo"
@@ -127,11 +133,11 @@
 
 <style>
   .svelte-controls {
-    width: auto;
-    position: fixed;
-    left: 0;
-    top: 0;
-    height: 768px;
+    position: absolute;
+    left: calc(50vw - ((var(--gameWidth) / 2) * 1px));
+    top: calc(50vh - ((var(--gameHeight) / 2) * 1px));
+    box-sizing: border-box;
+    height: calc(var(--gameHeight) * 1px);
     padding: 10px;
     background-color: #33333350;
 

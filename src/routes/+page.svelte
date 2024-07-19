@@ -6,5 +6,17 @@
   let phaserRef: TPhaserRef = { game: null, scene: null };
 </script>
 
-<PhaserGame bind:phaserRef />
-<SveltePanel bind:phaserRef />
+<div id="app">
+  <PhaserGame bind:phaserRef />
+  <SveltePanel bind:phaserRef />
+</div>
+
+<style>
+  #app {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+  }
+</style>
